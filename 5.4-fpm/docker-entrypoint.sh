@@ -74,6 +74,8 @@ if [ -n "$SMTP" ]; then
 fi
 
 
+docker-php-ext-enable pdo_pgsql
+
 #
 # Run
 ${*}

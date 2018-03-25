@@ -53,10 +53,10 @@ RUN ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h && \
     pecl install redis && \
     pecl install xdebug-2.4.1
 
-ADD https://blackfire.io/api/v1/releases/probe/php/linux/amd64/54 /tmp/blackfire-probe.tar.gz
-RUN tar zxpf /tmp/blackfire-probe.tar.gz -C /tmp && \
-    mv /tmp/blackfire-*.so `php -r "echo ini_get('extension_dir');"`/blackfire.so && \
-    rm /tmp/blackfire-probe.tar.gz
+# Install Postgre PDO
+RUN apt-get update && apt-get install -y libpq-dev \
+    && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
+    && docker-php-ext-install pdo pdo_pgsql pgsql
 
 ENV LOCALTIME Europe/Paris
 ENV PHPFPM__access.format '"%R - %u [%t] \"%m %r\" %s %l %Q %f"'
