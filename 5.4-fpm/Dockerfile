@@ -58,6 +58,16 @@ RUN apt-get update && apt-get install -y libpq-dev \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
     && docker-php-ext-install pdo pdo_pgsql pgsql
 
+#install xdebug
+COPY xdebug/xdebug-2.2.0.tgz /tmp/
+COPY xdebug/xdebug.ini /usr/local/etc/php/conf.d/
+RUN cd /tmp/ && tar -xvzf /tmp/xdebug-2.2.0.tgz && cd xdebug-2.2.0 \
+       && phpize \
+       && ./configure \
+       && make \
+       && echo "zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20100525/xdebug.so" >> /usr/local/etc/php/conf.d/xdebug.ini
+
+
 ENV LOCALTIME Europe/Paris
 ENV PHPFPM__access.format '"%R - %u [%t] \"%m %r\" %s %l %Q %f"'
 
