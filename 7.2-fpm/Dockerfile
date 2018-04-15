@@ -1,4 +1,4 @@
-FROM php:7.1-fpm
+FROM php:7.2-fpm
 MAINTAINER Alterway <iac@alterway.fr>
 
 RUN apt-get update && \
@@ -7,7 +7,6 @@ RUN apt-get update && \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libmcrypt-dev \
-        libpng12-dev \
         libgmp-dev \
         libxml2-dev \
         zlib1g-dev \
@@ -43,7 +42,6 @@ RUN ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h && \
     docker-php-ext-install ldap && \
     docker-php-ext-install soap && \
     docker-php-ext-install intl && \
-    docker-php-ext-install mcrypt && \
     docker-php-ext-install gd && \
     docker-php-ext-install gmp && \
     docker-php-ext-install bcmath && \

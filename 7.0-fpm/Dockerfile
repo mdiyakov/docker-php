@@ -3,6 +3,7 @@ MAINTAINER Alterway <iac@alterway.fr>
 
 RUN apt-get update && \
     apt-get install -y \
+        libpq-dev \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libmcrypt-dev \
@@ -18,7 +19,6 @@ RUN apt-get update && \
         libcurl4-openssl-dev \
         libssl-dev \
         libsqlite3-dev \
-        php-pear \
         curl \
         ssmtp \
         mysql-client \
@@ -36,6 +36,7 @@ RUN ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h && \
     docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd && \
     docker-php-ext-configure mysqli --with-mysqli=mysqlnd && \
     docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/lib && \
+    docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql && \
     docker-php-ext-install pdo_mysql && \
     docker-php-ext-install mysqli && \
     docker-php-ext-install pdo_sqlite && \
@@ -51,10 +52,19 @@ RUN ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h && \
     docker-php-ext-install pcntl && \
     docker-php-ext-install ftp && \
     docker-php-ext-install sockets && \
-    pecl install mongodb && \
-    pecl install memcached && \
-    pecl install redis && \
-    pecl install xdebug
+    docker-php-ext-install pdo_pgsql pgsql
+
+
+#install xdebug
+COPY xdebug/xdebug-2.6.0.tgz /tmp/
+COPY xdebug/xdebug.ini /usr/local/etc/php/conf.d/
+RUN cd /tmp/ && tar -xvzf /tmp/xdebug-2.6.0.tgz && cd xdebug-2.6.0 \
+       && phpize \
+       && ./configure \
+       && make \
+       && echo "zend_extension = /tmp/xdebug-2.6.0/modules/xdebug.so" >> /usr/local/etc/php/conf.d/xdebug.ini
+
+
 
 ADD http://www.zlib.net/zlib-1.2.11.tar.gz /tmp/zlib.tar.gz
 RUN tar zxpf /tmp/zlib.tar.gz -C /tmp && \
@@ -64,10 +74,6 @@ RUN tar zxpf /tmp/zlib.tar.gz -C /tmp && \
     rm -Rf /tmp/zlib-1.2.11 && \
     rm /tmp/zlib.tar.gz
 
-ADD https://blackfire.io/api/v1/releases/probe/php/linux/amd64/56 /tmp/blackfire-probe.tar.gz
-RUN tar zxpf /tmp/blackfire-probe.tar.gz -C /tmp && \
-    mv /tmp/blackfire-*.so `php -r "echo ini_get('extension_dir');"`/blackfire.so && \
-    rm /tmp/blackfire-probe.tar.gz
 
 ENV LOCALTIME Europe/Paris
 ENV PHPFPM__access.format '"%R - %u [%t] \"%m %r\" %s %l %Q %f"'

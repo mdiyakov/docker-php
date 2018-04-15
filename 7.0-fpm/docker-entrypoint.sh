@@ -77,7 +77,7 @@ if [ -n "$SMTP" ]; then
     sed -i "s/mailhub=.*/mailhub=${SMTP}/"  /etc/ssmtp/ssmtp.conf
 fi
 
-
+docker-php-ext-enable pdo_pgsql
 #
 # Run
 ${*}
