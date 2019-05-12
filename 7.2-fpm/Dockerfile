@@ -28,6 +28,12 @@ RUN apt-get update && \
     wget https://getcomposer.org/download/1.2.4/composer.phar -O /usr/local/bin/composer && \
     chmod a+rx /usr/local/bin/composer
 
+# Install zip
+RUN apt-get update && \
+     apt-get install -y \
+         zlib1g-dev \
+         && docker-php-ext-install zip
+
 RUN ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h && \
     ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so && \
     ln -s /usr/lib/x86_64-linux-gnu/liblber.so /usr/lib/liblber.so && \
